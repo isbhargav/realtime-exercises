@@ -42,7 +42,7 @@ async function getNewMsgs() {
   allChat = json.msg;
   render();
   // Recursive code
-  setTimeout(getNewMsgs, INTERVAL);
+  // setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
@@ -58,5 +58,14 @@ function render() {
 const template = (user, msg) =>
   `<li class="collection-item"><span class="badge">${user}</span>${msg}</li>`;
 
-// make the first request
-getNewMsgs();
+let timeToMakeNextRequest = 0;
+async function rafTimer(time){
+  if(timeToMakeNextRequest <= time){
+    await getNewMsgs()
+    timeToMakeNextRequest = time + INTERVAL;
+  }
+  requestAnimationFrame(rafTimer)
+}
+// Call when page loads
+// This function is getting called 1000's of time so make sure you don't do heavy computation inside it
+requestAnimationFrame(rafTimer)
