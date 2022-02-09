@@ -10,6 +10,7 @@ const INTERVAL = 3000;
 // a submit listener on the form in the HTML
 chat.addEventListener("submit", function (e) {
   e.preventDefault();
+  // post Message function
   postNewMsg(chat.elements.user.value, chat.elements.text.value);
   chat.elements.text.value = "";
 });
@@ -17,11 +18,31 @@ chat.addEventListener("submit", function (e) {
 async function postNewMsg(user, text) {
   // post to /poll a new message
   // write code here
+  return fetch('/poll',{
+    method: "POST",
+    body: JSON.stringify({user, text}),
+    headers:{
+      'Content-Type':'application/json'
+    }
+  })
 }
 
 async function getNewMsgs() {
   // poll the server
   // write code here
+  let json;
+  try {
+    const res = await fetch("/poll");
+    json = await res.json()
+  }
+  catch(err){
+    // Backoff code
+    console.error("Poll error", err)
+  }
+  allChat = json.msg;
+  render();
+  // Recursive code
+  setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
